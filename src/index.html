@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图表展示</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.common.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="form">
+        <span>
+          <span>最小值:</span>
+          <input
+            type="text"
+            placeholder="请输入"
+            v-model="hash.min"
+            oninput="if(value > 100) {value=100;}if(value <0) {value=0;}"
+          />
+        </span>
+        <span>
+          <span>最大值:</span>
+          <input
+            type="text"
+            placeholder="请输入"
+            v-model="hash.max"
+            oninput="if(value > 100) {value=100;}if(value <0) {value=0;}"
+          />
+        </span>
+        <span>
+          <span>数量:</span>
+          <input
+            type="text"
+            placeholder="请输入"
+            v-model="hash.numbersCount"
+            oninput="if(value > 10) {value=10;}"
+          />
+        </span>
+        <span>
+          <span>排序:</span>
+          <select @change="selected($event)">
+            <option value="MinToMax">从小到大</option>
+            <option value="MaxToMin">从大到小</option>
+          </select>
+        </span>
+        <button class="button" @click="submit">生成</button>
+      </header>
+      <main class="echart" style="width: 600px; height: 400px"></main>
+    </div>
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          hash: {
+            min: null,
+            max: null,
+            numbersCount: null,
+            select: 'MinToMax',
+          },
+          result: null,
+        },
+
+        methods: {
+          selected(e) {
+            this.hash.select = e.target.value
+          },
+          produce(hash) {
+            let sortResult = []
+            const median = Math.round(hash.numbersCount / 2)
+            const difference = hash.numbersCount - median
+            if (hash.select === 'MinToMax') {
+              const maxNumArray = Array(difference).fill(hash.max, 0, difference)
+              const minNumArray = Array(median).fill(hash.min, 0, median)
+              for (let i = 0; i < median; i++) {
+                if (minNumArray[i]) sortResult.push(minNumArray[i])
+                if (maxNumArray[i]) sortResult.push(maxNumArray[i])
+              }
+            } else if (hash.select === 'MaxToMin') {
+              const maxNumArray = Array(median).fill(hash.max, 0, median)
+              const minNumArray = Array(difference).fill(hash.min, 0, difference)
+              for (let i = 0; i < median; i++) {
+                if (maxNumArray[i]) sortResult.push(maxNumArray[i])
+                if (minNumArray[i]) sortResult.push(minNumArray[i])
+              }
+            }
+            this.result = sortResult
+          },
+          submit() {
+            if (!this.hash.min || !this.hash.max || !this.hash.numbersCount) {
+              alert('请输入所有的值')
+              return
+            } else if (Number(this.hash.min) > Number(this.hash.max)) {
+              alert('最小值比最大值大')
+              return
+            } else if (this.hash.numbersCount <= 0) {
+              alert('数量必须大于0')
+              return
+            }
+            this.produce(this.hash)
+          },
+          resultIndex(result) {
+            if (result) {
+              let index1 = []
+              result.forEach((x, index) => {
+                index1.push(index + 1)
+              })
+              return index1
+            }
+          },
+          drawLine(result) {
+            var myChart = echarts.init(document.querySelector('.echart'))
+            var option = {
+              xAxis: {
+                data: this.resultIndex(result) || [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              },
+              yAxis: {},
+              series: [
+                {
+                  type: 'bar',
+                  data: result || [20, 50, 20, 50, 20, 50, 20, 50, 20, 50],
+                },
+              ],
+            }
+            myChart.setOption(option)
+          },
+        },
+        mounted() {
+          this.drawLine(this.result)
+        },
+        watch: {
+          result: {
+            handler(result) {
+              this.drawLine(result)
+            },
+          },
+        },
+      })
+    </script>
+  </body>
+</html>

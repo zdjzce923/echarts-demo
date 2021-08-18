@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+#app {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+header {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+header > span {
+  font-size: 14px;
+  display: inline-block;
+  margin-right: 10px;
+}
+header > span > input {
+  height: 21px;
+  width: 50px;
+  display: inline-block;
+}
+header > span > select {
+  height: 21px;
+}
+header > .button {
+  width: 60px;
+  background: #5470c6;
+  border: none;
+  color: white;
+  height: 23px;
+  cursor: pointer;
+}
